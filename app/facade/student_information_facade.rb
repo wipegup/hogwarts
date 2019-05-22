@@ -1,6 +1,6 @@
 class StudentInformationFacade
   def initialize(house)
-    @key = 'alohamora'
+    @key = ENV['api_key']
     @house = house
   end
 
@@ -9,8 +9,7 @@ class StudentInformationFacade
   end
 
   def students
-    student_json = hogwarts_service.students(@house)
-    student_json.map do |s_info|
+    @_s ||= hogwarts_service.students(@house).map do |s_info|
       Student.new(s_info)
     end
   end

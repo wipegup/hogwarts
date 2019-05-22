@@ -1,6 +1,5 @@
 class HogwartsService
   def initialize(key)
-    # binding.pry
     @key = key
   end
 
@@ -9,17 +8,21 @@ class HogwartsService
   end
 
   def conn
-    Faraday.new('http://hogwarts-it.herokuapp.com/api/v1/') do |f|
+    Faraday.new('http://hogwarts-as-a-service.herokuapp.com/api/v1/') do |f|
       f.adapter Faraday.default_adapter
-      f.params['api_key'] = @key
+      f.headers['x-api_key'] = @key
     end
   end
 
   def students(house)
-    response = conn.get('house/'+house)
-    json_data = json(response.body)
-    binding.pry
-    json_data[:data][0][:attributes][:students]
+    house_id = find_house_id(house)
+    response = conn.get('house/'+house_id)
+    json(response.body)
+  end
+
+  def find_house_id(house)
+    house_ids = json(conn.get('house').body)
+    house_ids.find{|h| h[:name] == house}[:id].to_s
   end
 
 end
